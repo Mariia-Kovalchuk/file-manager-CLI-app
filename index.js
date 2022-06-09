@@ -1,9 +1,12 @@
 import readline from "readline";
-import os from "os"
-import path from "path";
 
+import navigationHandler from "./services/navigation/index.js";
+import osInfoHandler from "./services/system/index.js";
+import filesHandler from "./services/files/index.js";
+import { calculateHash } from "./services/hash/calculateHash.js";
+import compressFn from "./services/compression/index.js";
 
-let currentDir = os.homedir()
+ let currentDir = osInfoHandler.getHomeDir()
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -11,30 +14,35 @@ const rl = readline.createInterface({
 });
 const userName = process.argv[2].split("=")[1]
 
+
 rl.setPrompt(`Welcome to the File Manager, ${userName}! \nYou are currently in ${currentDir}\n`)
 rl.prompt();
 
-rl.on("line", (command) => {
+rl.on("line", async (command) => {
     let commandType = command.toLowerCase().trim().split(" ")[0]
-    let commandArguments = command.toLowerCase().trim().split(" ").slice(1)
-    // console.log(commandType);
-    console.log("commandArguments", commandArguments);
-    switch (command.toLowerCase().trim().split(" ")[0]) {
+    let commandArguments = command.trim().split(" ").slice(1)
+    switch (commandType) {
         case ".exit":
             rl.close();
                 
             break;
         case "up":
-            currentDir = path.dirname(currentDir)
-            console.log(`You are currently in ${currentDir}`);
+            currentDir = navigationHandler.goUpperFromDir(currentDir)
             break;
         case "cd":
+            const newDir = navigationHandler.goToDedicatedFolder(currentDir, commandArguments);
+            if (newDir) {
+                currentDir = newDir
+            }
             break;
         case "ls":
+            await navigationHandler.getFolderContents(currentDir);
             break;
         case "cat":
             break;
         case "add":
+            await filesHandler.createFile(currentDir, commandArguments)
+
             break;
         case "rn":
             break;
@@ -47,20 +55,21 @@ rl.on("line", (command) => {
         case "os":
             switch (commandArguments[0]) {
                 case "--EOL":
-                    
+                    osInfoHandler.getEOL()
                     break;
                 case "--cpus":
-                    
+                    osInfoHandler.getCPUInfo()
                     break;
                 case "--homedir":
-                    
+                    const homeDir = osInfoHandler.getHomeDir()
+                    console.log("homedir:", homeDir);
                     break;
                 case "--username":
-                    console.log("--username");
+                    osInfoHandler.getCurrentUserName();
                     
                     break;
                 case "--architecture":
-                    console.log("at --architecture");
+                    osInfoHandler.getCPUsArchitecture();
                     break;
                         
                 default:
@@ -70,20 +79,26 @@ rl.on("line", (command) => {
             break;
                         
         case "hash":
+            await calculateHash(currentDir, commandArguments)
             break;
         case "compress":
+            await compressFn.compressFile(currentDir, commandArguments)
             break;
         case "decompress":
+            await compressFn.decompressFile(currentDir, commandArguments)
             break;
         default:
             console.warn('Invalid input');
             break;
     }
+    console.log(`You are currently in ${currentDir}\n`);
+  
 });
 
 rl.on("close", () => {
     console.log(`Thank you for using File Manager, ${userName}!`);
 })
+
 
 
 // async function invokeAction({ action, id, name, email, phone }) {
