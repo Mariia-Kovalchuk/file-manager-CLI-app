@@ -21,43 +21,51 @@ rl.prompt();
 rl.on("line", async (command) => {
     let commandType = command.toLowerCase().trim().split(" ")[0]
     let commandArguments = command.trim().split(" ").slice(1);
-        if (commandType === '.exit') {
-            rl.close();
-            return;
+    if (commandType === '.exit') {
+        rl.close();
+        return;
     };
     
     switch (commandType) {
         case "up":
             currentDir = navigationHandler.goUpperFromDir(currentDir)
             break;
+        
         case "cd":
             const newDir = navigationHandler.goToDedicatedFolder(currentDir, commandArguments);
             if (newDir) {
                 currentDir = newDir
             }
             break;
+        
         case "ls":
             await navigationHandler.getFolderContents(currentDir);
             break;
+        
         case "cat":
             await filesHandler.printFileContent(currentDir, commandArguments);
             break;
+        
         case "add":
             await filesHandler.createFile(currentDir, commandArguments)
-
             break;
+        
         case "rn":
             await filesHandler.renameFile(currentDir, commandArguments)
             break;
+        
         case "cp":
             await filesHandler.copyFile(currentDir, commandArguments)
             break;
+        
         case "mv":
             await filesHandler.moveFile(currentDir, commandArguments)
             break;
+        
         case "rm":
             await filesHandler.deleteFile(currentDir, commandArguments)
             break;
+        
         case "os":
             switch (commandArguments[0]) {
                 case "--EOL":
@@ -72,12 +80,10 @@ rl.on("line", async (command) => {
                     break;
                 case "--username":
                     osInfoHandler.getCurrentUserName();
-                    
                     break;
                 case "--architecture":
                     osInfoHandler.getCPUsArchitecture();
                     break;
-                        
                 default:
                     console.warn('Invalid input');
                     break;
@@ -87,12 +93,15 @@ rl.on("line", async (command) => {
         case "hash":
             await calculateHash(currentDir, commandArguments)
             break;
+        
         case "compress":
             await compressFn.compressFile(currentDir, commandArguments)
             break;
+        
         case "decompress":
             await compressFn.decompressFile(currentDir, commandArguments)
             break;
+        
         default:
             console.warn('Invalid input');
             break;
@@ -104,67 +113,3 @@ rl.on("line", async (command) => {
 rl.on("close", () => {
     console.log(`Thank you for using File Manager, ${userName}!`);
 })
-
-
-
-// async function invokeAction({ action, id, name, email, phone }) {
-//     switch (action) {
-//         case 'list':
-//             try {
-//                 const contacts = await contactsHandler.listContacts();
-//                 console.table(contacts);
-                
-//             } catch (error) {
-//                 console.log(error.message);
-//             };
-//             break;
-            
-//         case 'get':
-//             try {
-//                 const contact = await contactsHandler.getContactById(id)
-//                 if (!contact) {
-//                     console.log(`There is no contact with id ${id}`);
-//                     return;
-//                 }
-//                 console.log(`Contact with id ${id}: `, contact);
-                    
-//             } catch (error) {
-//                 console.log(error.message);
-//             };
-//             break;
-            
-//         case 'add':
-//             try {
-//                 const updatedList = await contactsHandler.addContact(name, email, phone)
-//                 if (!updatedList) {
-//                     console.log('Name, email and phone should be send in request');
-//                     return;
-//                 }
-//                 console.log(`The new contact ${name} was added successfully. The updated contact list:`);
-//                 console.table(updatedList);
-                    
-//             } catch (error) {
-//                 console.log(error.message);
-//             }
-//             break;
-            
-//         case 'remove':
-//             try {
-//                 const updatedContactList = await contactsHandler.removeContact(id)
-//                 if (!updatedContactList) {
-//                     console.log(`There is no contact with id ${id}`);
-//                     return;
-//                 }
-//                 console.log(`The contact with id ${id} was removed successfully. The updated contact list:`);
-//                 console.table(updatedContactList);
-//             } catch (error) {
-//                 console.log(error.message);
-//             }
-//             break;
-
-//         default:
-//             console.warn('\x1B[31m Unknown action type!');
-//     }
-// }
-
-// invokeAction(argv);
