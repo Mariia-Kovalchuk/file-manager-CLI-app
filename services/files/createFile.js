@@ -1,11 +1,7 @@
 
 import { readdir, writeFile } from 'fs/promises';
-
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import path from 'path';
 
-// const filesFolderPath = path.join(dirname(fileURLToPath(import.meta.url)), 'files');
 
 
 export const createFile = async (currentDir, fileNameArr) => {
@@ -14,7 +10,7 @@ export const createFile = async (currentDir, fileNameArr) => {
             console.log("You've forgotten to write a file name. Please, try once more time."); 
             return
         }
-        const fileName = fileNameArr[0];
+        const fileName = fileNameArr.join();
         const files = await readdir(currentDir);
         if (!files.includes(fileName)) {
             const newFilePath = path.join(currentDir, fileName);

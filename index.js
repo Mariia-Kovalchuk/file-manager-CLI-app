@@ -15,17 +15,18 @@ const rl = readline.createInterface({
 const userName = process.argv[2].split("=")[1]
 
 
-rl.setPrompt(`Welcome to the File Manager, ${userName}! \nYou are currently in ${currentDir}\n`)
+rl.setPrompt(`Welcome to the File Manager, ${userName}! \nYou are currently in ${currentDir}\n \n`)
 rl.prompt();
 
 rl.on("line", async (command) => {
     let commandType = command.toLowerCase().trim().split(" ")[0]
-    let commandArguments = command.trim().split(" ").slice(1)
-    switch (commandType) {
-        case ".exit":
+    let commandArguments = command.trim().split(" ").slice(1);
+        if (commandType === '.exit') {
             rl.close();
-                
-            break;
+            return;
+    };
+    
+    switch (commandType) {
         case "up":
             currentDir = navigationHandler.goUpperFromDir(currentDir)
             break;
@@ -39,18 +40,23 @@ rl.on("line", async (command) => {
             await navigationHandler.getFolderContents(currentDir);
             break;
         case "cat":
+            await filesHandler.printFileContent(currentDir, commandArguments);
             break;
         case "add":
             await filesHandler.createFile(currentDir, commandArguments)
 
             break;
         case "rn":
+            await filesHandler.renameFile(currentDir, commandArguments)
             break;
         case "cp":
+            await filesHandler.copyFile(currentDir, commandArguments)
             break;
         case "mv":
+            await filesHandler.moveFile(currentDir, commandArguments)
             break;
         case "rm":
+            await filesHandler.deleteFile(currentDir, commandArguments)
             break;
         case "os":
             switch (commandArguments[0]) {

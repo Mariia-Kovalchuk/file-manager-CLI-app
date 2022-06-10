@@ -7,7 +7,12 @@ export const getFolderContents = async (currentDir) => {
     try {
         if (existsSync(currentDir)) {
             const files = await readdir(currentDir);
-            console.log(files);
+            if (files.length) {
+                console.log(files);
+                
+            } else {
+                console.log("The current folder is empty");
+            }
         } else {
             throw new Error("Operation failed")
         }
