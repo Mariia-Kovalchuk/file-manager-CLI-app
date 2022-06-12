@@ -1,6 +1,5 @@
 import { copyFile } from "./copyFile.js";
 import { deleteFile } from "./deleteFile.js";
-import { unlink,  } from 'fs/promises';
 
 
 export const moveFile = async (currentDir, commandArguments) => {

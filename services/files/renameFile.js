@@ -1,22 +1,23 @@
 
 import { rename, readdir } from 'fs/promises';
-
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import path from 'path';
 
 
 export const renameFile = async (currentDir, commandArguments) => {
-    const oldFileName = commandArguments[0]
-    const newFileName = commandArguments[1]
-
-    const oldFilePath = path.join(currentDir, oldFileName);
-    const newFilePath = path.join(currentDir, newFileName);
-
     try {
-        const files = await readdir(currentDir);
+        if (commandArguments.length < 2) {
+            throw new Error("You've missed some argument. Please, try once more time.");
+        };
+        const oldFileName = path.basename(commandArguments[0]);
+        const oldFileNameExtension = path.extname(oldFileName);
+        const newFileName = commandArguments[1] + oldFileNameExtension;
 
-        if (files.includes(oldFileName)&&!files.includes(newFileName)) {
+        const oldFilePath = path.resolve(currentDir, commandArguments[0]);
+        const newFilePath = path.resolve(path.dirname(oldFilePath), newFileName);
+
+            const files = await readdir(path.dirname(oldFilePath));
+
+        if (files.includes(oldFileName) && !files.includes(newFileName)) {
             await rename(oldFilePath, newFilePath);
             console.log(`${oldFileName} was renamed successfully.`);
         } else {

@@ -1,21 +1,18 @@
-import { readFile, readdir } from 'fs/promises';
+import { readdir } from 'fs/promises';
 import path from 'path';
 import { createReadStream } from 'fs';
 
 
-
 export const printFileContent = async (currentDir, argsArr) => {
-    const fileName = argsArr.join();
 
     try {
+
+        const filePath = argsArr[0];
+        const fileToReadPath = path.resolve(currentDir, filePath);
+        const fileName = path.basename(fileToReadPath);
         const files = await readdir(currentDir);
 
         if (files.includes(fileName)) {
-            const fileToReadPath = path.join(currentDir, fileName);
-            // const content = await readFile(fileToReadPath, { encoding: 'utf8' });
-            // console.log(content);
-
-
             await new Promise((res) =>
                 createReadStream(fileToReadPath)
                     .on('data', (data) => {
@@ -23,6 +20,7 @@ export const printFileContent = async (currentDir, argsArr) => {
                     })
                     .on('close', res)
             );
+
         } else {
             throw new Error(`Operation failed.\nThere's no file ${fileName} in current directory`)
         }
